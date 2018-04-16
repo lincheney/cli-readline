@@ -6,13 +6,15 @@
 #include <readline/readline.h>
 
 FILE* file = NULL;
+unsigned int max_lines = 0;
 
 void usage(char* arg0) {
     fprintf(stderr,
-        "Usage: %s [-f file] [-n name] [-p prompt]\n"
-        "   -f      file to dump buffer info\n"
-        "   -n      readline application name\n"
-        "   -p      readline prompt\n"
+        "Usage: %s [-f FILE] [-n NAME] [-p PROMPT] [-l LINES]\n"
+        "   -f FILE     dump buffer info into FILE\n"
+        "   -n NAME     readline application name\n"
+        "   -p PROMPT   readline prompt\n"
+        "   -l LINES    exit after LINES of input\n"
     , arg0);
 
 }
@@ -21,6 +23,8 @@ void line_handler(char *line)
 {
     if (! line) exit(0); // eof
     if (file) fprintf(file, "%i %s\n", -1, line);
+    if (max_lines == 1) exit(0);
+    max_lines--;
     free(line);
 }
 
@@ -28,7 +32,7 @@ int main(int argc, char *argv[])
 {
     int opt;
     char* prompt = NULL;
-    while ((opt = getopt(argc, argv, "hf:n:p:")) != -1) {
+    while ((opt = getopt(argc, argv, "hf:n:p:l:")) != -1) {
         switch (opt) {
             case 'f':
                 file = fopen(optarg, "w");
@@ -42,6 +46,9 @@ int main(int argc, char *argv[])
                 break;
             case 'p':
                 prompt = optarg;
+                break;
+            case 'l':
+                max_lines = atoi(optarg);
                 break;
             default:
                 usage(argv[0]);
