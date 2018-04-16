@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
     rl_initialize();
     rl_callback_handler_install(prompt, &line_handler);
 
+    setbuf(file, NULL);
     while (1)
     {
         rl_callback_read_char();
